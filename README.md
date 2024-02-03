@@ -1,6 +1,4 @@
-# Vegetation structure drives mosquito community
-composition in UK’s largest managed lowland
-wetland
+# Vegetation structure drives mosquito community composition in UK’s largest managed lowland wetland
 
 ## Folders
 
