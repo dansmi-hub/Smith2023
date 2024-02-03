@@ -6,7 +6,7 @@
 
 - **supplementary**: Supplementary information related to your project, including additional data, code, or documentation.
 
-- **renv**: The `renv` folder includes information about the R environment, ensuring reproducibility. It captures the package dependencies for your project.
+- **renv**: The `renv` folder includes information about the R environment, ensuring reproducibility. It captures the package dependencies for the project.
 
 - **manuscript**: Holds the LaTeX files for the manuscript compilation. This includes the main document and any supporting files.
 
