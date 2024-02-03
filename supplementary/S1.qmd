@@ -1,0 +1,53 @@
+---
+title: "SI: Vegetation structure drives mosquito community composition in UK’s largest managed lowland wetland"
+format: pdf
+editor: visual
+toc: true
+---
+
+{{< pagebreak >}}
+
+## Figure S1
+
+Fitted model convergence metrics for the Beta, Omega and Gamma parameters of the HMSC model. Effective Sample Size (ESS) over 1000 indicate good fit, while Potential Scale Reduction Factors (PSRF) values of under 1.1 (though ideally 1.01) are considered converged for MCMC sampling.
+
+![](images/ESS_PSRF.pdf){width="500" height="500"}
+
+<!-- ## Table S2 -->
+
+<!-- Comparison of Model Predictors between Treatment Levels Tier 1 (T1) and Tier 3 (T3), using Bayesian hierarchical linear models in BRMS and R including estimated values, 95% confidence intervals, and effect widths at a confidence level of 95%. -->
+
+<!-- | Variable          | Contrast | Estimate | CI Lower | CI Upper | CI Width | -->
+<!-- |-------------------|----------|----------|----------|----------|----------| -->
+<!-- | Width             | T1 - T3  | -8.58    | -23.94   | 6.31     | 0.95     | -->
+<!-- | Emergent Height   | T1 - T3  | -5.30    | -12.39   | -0.34    | 0.95     | -->
+<!-- | Shaded            | T1 - T3  | 0.12     | -0.01    | 0.27     | 0.95     | -->
+<!-- | pH                | T1 - T3  | 0.30     | -0.03    | 0.65     | 0.95     | -->
+<!-- | Salinity          | T1 - T3  | 0.01     | -0.12    | 0.15     | 0.95     | -->
+<!-- | Floating Cover    | T1 - T3  | 0.10     | 0.01     | 0.19     | 0.95     | -->
+<!-- | Bank Height       | T1 - T3  | -25.28   | -55.78   | -4.24    | 0.95     | -->
+<!-- | Bank Cover        | T1 - T3  | 0.01     | -0.05    | 0.07     | 0.95     | -->
+<!-- | Emergent Cover    | T1 - T3  | -0.01    | -0.04    | 0.02     | 0.95     | -->
+<!-- | Turbidity         | T1 - T3  | 0.02     | -0.15    | 0.18     | 0.95     | -->
+<!-- | Water Temperature | T1 - T3  | -0.82    | -2.23    | 0.59     | 0.95     | -->
+
+{{< pagebreak >}}
+
+## Table S2
+
+Detailed Variance Partitioning results for taxa across different environmental components, including Chemical, Vegetation, Structural, and Random Effects (spatial, season, year). Values represent the proportion of variance explained by each component for the respective taxa.
+
+| Taxa               | Chemical | Vegetation | Structural | Random: Spatial | Random: Season | Random: Year |
+|-----------|-----------|-----------|-----------|-----------|-----------|-----------|
+| Anopheles claviger        | 0.11     | 0.07       | 0.03       | 0.04            | 0.00            | 0.00         |
+| Anopheles maculipennis    | 0.05     | 0.04       | 0.03       | 0.00            | 0.00            | 0.00         |
+| Culiseta annulata        | 0.03     | 0.03       | 0.01       | 0.47            | 0.00            | 0.00         |
+| Culex pipiens         | 0.03     | 0.04       | 0.01       | 0.38            | 0.01            | 0.00         |
+| Damselfly larva    | 0.04     | 0.06       | 0.02       | 0.09            | 0.03            | 0.05         |
+| Dragonfly larva    | 0.01     | 0.02       | 0.01       | 0.00            | 0.00            | 0.00         |
+| Gammarus spp.           | 0.04     | 0.06       | 0.03       | 0.02            | 0.01            | 0.01         |
+| Saucerbug         | 0.01     | 0.01       | 0.01       | 0.00            | 0.00            | 0.00         |
+| Water beetle       | 0.02     | 0.02       | 0.01       | 0.05            | 0.02            | 0.04         |
+| Water beetle larva | 0.01     | 0.02       | 0.01       | 0.02            | 0.00            | 0.01         |
+| Water boatman      | 0.04     | 0.03       | 0.02       | 0.03            | 0.01            | 0.14         |
+| Water scorpion     | 0.01     | 0.01       | 0.01       | 0.00            | 0.00            | 0.00         |

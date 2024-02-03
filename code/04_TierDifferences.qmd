@@ -1,0 +1,590 @@
+---
+title: "Contrast or Compare?"
+format: pdf
+editor: visual
+execute: 
+  include: true
+  cache: true
+---
+
+```{r model-code, include=FALSE}
+library(brms)
+library(tidyverse)
+library(marginaleffects)
+library(easystats)
+library(tidybayes)
+library(here)
+library(emmeans)
+library(ggsci)
+
+# Seed for these models is usually 1234 but has never been set sepcifically. As such you can return slightly dwifferent results from the model code, but none that change the significance or direction of the results we found. Usually this is a small change in the order of 0.01 in standardised coefficent effect for the more variable covariates. 
+```
+
+```{r model-code, include=FALSE}
+# Data --------------------------------------------------------------------
+
+
+# install cmdstan on your computer.
+options(mc.cores = 4, brms.backend = "cmdstanr")
+
+# Use the Johnson color palette
+clrs <- MetBrewer::met.brewer("Johnson")
+
+# Tell bayesplot to use the Johnson palette (for things like pp_check())
+bayesplot::color_scheme_set(c("grey30", clrs[2], clrs[1], clrs[3], clrs[5], clrs[4]))
+
+# Load data
+data = read_rds(here::here("data/Prepared_Data.rds"))
+data = data.frame(data$X, data$xy, year = data$year, 
+                  season = data$season, plot = data$plot_id)
+data$tier = ifelse(data$T1 == TRUE, "T1", "T3")
+data$site = str_sub(data$plot, 1, 2)
+
+# Create factors
+data = data %>% 
+  mutate(across(year:site, as.factor)) %>% 
+  mutate(across(starts_with("cover_"), function(x) round(x/100, digits = 2)))
+
+
+# Functions + Themes ------------------------------------------------------
+
+run_brms <- function(bf, prior = NULL) {
+  
+  model = brm(
+    formula = bf,
+    data = data,
+    prior = prior,
+    chains = 4, 
+    # If we want to make predictions at 95% CI Kruschke says 10,000 ESS needed
+    # for a stable prediction (DBDA p.184)
+    iter = 10000, 
+    warmup = 1000, 
+    seed = 1234,
+    silent = 2,
+    refresh = 0,
+    backend = "cmdstanr",
+    control = list(adapt_delta=0.999, max_treedepth = 15),
+    threads = threading(2)
+    )
+  
+  return(model)
+}
+
+# Custom ggplot theme to make pretty plots
+# Get the font at https://fonts.google.com/specimen/Jost
+theme_nice <- function() {
+  theme_minimal(base_family = "Jost") +
+    theme(panel.grid.minor = element_blank(),
+          plot.title = element_text(family = "Jost", face = "bold"),
+          axis.title = element_text(family = "Jost Medium"),
+          strip.text = element_text(family = "Jost", face = "bold",
+                                    size = rel(1), hjust = 0),
+          strip.background = element_rect(fill = "grey80", color = NA))
+}
+
+# Formula -----------------------------------------------------------------
+
+# Student T distributions
+bf_width = bf(width ~ tier +  (1|site) + (1|year/season), family = student())
+# bf_width2 = bf(width ~ 0 + tier +  (1|site) + (1|year/season), family = student())
+bf_watertemp = bf(water_temp ~ tier +  (1|site) + (1|year/season), family = student()) 
+bf_turbidity = bf(turbidity ~ tier +  (1|site) + (1|year/season), family = student())
+bf_salinity = bf(salinity ~ tier +  (1|site) + (1|year/season), family = student())
+bf_ph = bf(ph ~ tier +  (1|site) + (1|year/season), family = student())
+bf_dO2 = bf(dO2 ~ tier +  (1|site) + (1|year/season), family = student())
+
+# ZOI Beta Distributions
+bf_coverfloating = bf(cover_floating ~ tier +  (1|site) + (1|year/season),
+                      phi ~ tier , # Precision
+                      zoi ~ tier, # Zero Inflation
+                      coi ~ tier, # Conditional One Inflation
+                      family = zero_one_inflated_beta()
+)
+
+bf_shaded = bf(shaded ~ tier +  (1|site) + (1|year/season),
+               phi ~ tier , # Precision
+               zoi ~ tier, # Zero Inflation
+               coi ~ tier, # Conditional One Inflation
+               family = zero_one_inflated_beta()
+)
+
+bf_cover_vertical = bf(cover_vertical ~ tier +  (1|site) + (1|year/season),
+               phi ~ tier , # Precision
+               zoi ~ tier, # Zero Inflation
+               coi ~ tier, # Conditional One Inflation
+               family = zero_one_inflated_beta()
+)
+
+bf_cover_emergent = bf(cover_emergent ~ tier +  (1|site) + (1|year/season),
+               phi ~ tier , # Precision
+               zoi ~ tier, # Zero Inflation
+               coi ~ tier, # Conditional One Inflation
+               family = zero_one_inflated_beta()
+)
+
+# Hurdle Lognormal Dsitributions
+bf_heightvertical = bf(height_vertical ~ tier +  (1|site) + (1|year/season),
+                      hu ~ tier,
+                      family = hurdle_lognormal()
+)
+
+bf_heightemergent = bf(height_emergent ~ tier +  (1|site) + (1|year/season),
+                       hu ~ tier,
+                       family = hurdle_lognormal()
+)
+
+
+# Priors ------------------------------------------------------------------
+
+# To remove some of the divergence in these models we need to think about
+# tighter priors for them. Most of the divergence comes from unbalanced nested
+# temporal effects, can we ask Louise about any suitable methods for bettering?
+
+# Modelling ---------------------------------------------------------------
+
+model_width = run_brms(bf_width)
+# model_width2 = run_brms(bf_width2)
+model_watertemp = run_brms(bf_watertemp)
+model_turbidity = run_brms(bf_turbidity)
+model_salinity = run_brms(bf_salinity)
+model_ph = run_brms(bf_ph)
+model_dO2 = run_brms(bf_dO2)
+model_coverfloating = run_brms(bf_coverfloating)
+model_coveremergent = run_brms(bf_cover_emergent)
+model_coververtical = run_brms(bf_cover_vertical)
+model_shaded = run_brms(bf_shaded)
+model_heightvertical = run_brms(bf_heightvertical)
+model_heightemergent = run_brms(bf_heightemergent)
+
+# Save the model objects to an RData file
+save(file = here::here("results/TierDifferences.RData"), list = ls()[grepl("model_", ls())], compress = "xz")
+
+```
+
+## Functions
+
+These are functions to estimate:
+
+1.  The separate predicted distributions on the response scale for each Tier
+2.  The contrast between tiers. Tier 1 - Tier 3 predictions to calculate the effect Tier has on the prediction.
+
+```{r, include=FALSE}
+predicted_distributions = function(model, name = "default") {
+  model |>  
+  emmeans(~ tier, epred = TRUE, regrid = "response") %>% 
+  gather_emmeans_draws() |> 
+    # Plot
+  ggplot(aes(x = .value, fill = tier)) +
+  stat_halfeye(alpha = 0.8) +
+  scale_fill_aaas() +
+  labs(x = paste0(name), 
+       y = "Density",
+       fill = "Tier",
+       subtitle = "Predicted Distribution") +
+  # theme_nice() +
+  theme(legend.position = "bottom")
+}
+
+contrast_tiers = function(model, name = "defaultname", ...) {
+ model |> 
+  emmeans(~ tier, regrid = "response", epred = TRUE) |> 
+  # Contrast the groups pairwise (T1 - T3 predictions)
+  contrast("pairwise") |> 
+  gather_emmeans_draws() |> 
+  # Plot
+  ggplot(aes(x = .value)) +
+  stat_halfeye(fill = clrs[[3]]) +
+  labs(subtitle = paste("Average marginal effect of", str_to_sentence(name)), 
+       y = "Density",
+       x = paste("Contrast T1 - T3 for", str_to_sentence(name)),
+       caption = "80% and 95% credible intervals shown in black") +
+  # theme_nice() +
+  theme(legend.position = "bottom") 
+}
+
+arrange_plots = function(model, name, xlim = NULL, ...) {
+  
+  plot_1 = predicted_distributions(model, name)
+  plot_2 = contrast_tiers(model, name)
+  if (!is.null(xlim)) {
+    plot_1 = plot_1 + xlim(xlim)
+    plot_2 = plot_2 + xlim(xlim)
+  }
+  cowplot::plot_grid(plot_1, plot_2)
+}
+```
+
+{{< pagebreak >}}
+
+## Width
+
+```{r, echo=FALSE}
+arrange_plots(model_width, "Width")
+
+model_width |> 
+  emmeans(~ tier, regrid = "response", epred = TRUE) |> 
+  # Contrast the groups pairwise (T1 - T3 predictions)
+  contrast("pairwise") |> 
+  gather_emmeans_draws() |> 
+  mean_qi(.width = 0.90)
+
+model_width |> 
+  broom.mixed::tidy() |> 
+  knitr::kable(digits = 2)
+```
+
+{{< pagebreak >}}
+
+## Water Temp
+
+```{r, echo=FALSE}
+arrange_plots(model_watertemp, "Water Temp")
+
+model_watertemp |> 
+  broom.mixed::tidy() |> 
+  knitr::kable(digits = 2)
+
+```
+
+{{< pagebreak >}}
+
+## Turbidity
+
+```{r, echo=FALSE}
+arrange_plots(model_turbidity, "Turbidity")
+
+model_turbidity |> 
+  broom.mixed::tidy() |> 
+  knitr::kable(digits = 2)
+```
+
+{{< pagebreak >}}
+
+## Salinity
+
+```{r, echo=FALSE}
+arrange_plots(model_salinity, "Salinity")
+
+model_salinity |> 
+  broom.mixed::tidy() |> 
+  knitr::kable(digits = 2)
+```
+
+{{< pagebreak >}}
+
+## pH
+
+```{r, echo=FALSE}
+arrange_plots(model_ph, "pH")
+
+# Means
+model_ph |> 
+  emmeans(~ tier, regrid = "response", epred = TRUE) |> 
+  # Contrast the groups pairwise (T1 - T3 predictions)
+  contrast("revpairwise") |> 
+  # gather_emmeans_draws() |> 
+  describe_posterior()
+
+
+model_ph |> 
+  broom.mixed::tidy() |> 
+  knitr::kable(digits = 2)
+```
+
+{{< pagebreak >}}
+
+## Dissolved O2
+
+```{r, echo=FALSE}
+arrange_plots(model_dO2, "DO2")
+
+model_dO2 |> 
+  broom.mixed::tidy() |> 
+  knitr::kable(digits = 2)
+```
+
+{{< pagebreak >}}
+
+## Shaded
+
+```{r, echo=FALSE}
+arrange_plots(model_shaded, "Shaded")
+
+# Means
+model_shaded |> 
+  emmeans(~ tier, regrid = "response", epred = TRUE) |> 
+  # Contrast the groups pairwise (T1 - T3 predictions)
+  contrast("pairwise") |> 
+  # gather_emmeans_draws() |> 
+  describe_posterior()
+
+# ZOI
+model_shaded %>%
+  emmeans(~ tier, regrid = "response", dpar = "zoi", re_formula = NULL) %>% 
+  contrast(method = "revpairwise") |> 
+  describe_posterior()
+
+# COI
+model_shaded %>%
+  emmeans(~ tier, regrid = "response", dpar = "coi", re_formula = NULL) %>% 
+  contrast(method = "revpairwise") |> 
+  describe_posterior()
+
+model_shaded |> 
+  broom.mixed::tidy() |> 
+  knitr::kable(digits = 2)
+```
+
+{{< pagebreak >}}
+
+## Floating Vegetation
+
+```{r, echo=FALSE}
+arrange_plots(model_coverfloating, "Floating Vegetation")
+
+model_coverfloating |> 
+    emmeans(~ tier, regrid = "response", epred = TRUE) |> 
+  # Contrast the groups pairwise (T1 - T3 predictions)
+  contrast("revpairwise") |> 
+  describe_posterior()
+
+# ZOI
+model_coverfloating %>%
+  emmeans(~ tier, regrid = "response", dpar = "zoi", re_formula = NULL) %>% 
+  contrast(method = "revpairwise") |> 
+  describe_posterior()
+
+# COI
+model_coverfloating %>%
+  emmeans(~ tier, regrid = "response", dpar = "coi", re_formula = NULL) %>% 
+  contrast(method = "revpairwise") |> 
+  describe_posterior()
+
+model_coverfloating |> 
+  broom.mixed::tidy() |> 
+  knitr::kable(digits = 2)
+```
+
+{{< pagebreak >}}
+
+## Terrestrial Vegetation
+
+```{r, echo=FALSE}
+arrange_plots(model_heightvertical, "Terrestrial Vegetation", xlim = c(-75, 125))
+
+model_heightvertical |> 
+    emmeans(~ tier, regrid = "response", epred = TRUE) |> 
+  # Contrast the groups pairwise (T1 - T3 predictions)
+  contrast("revpairwise") |> 
+  describe_posterior()
+
+# Hu
+model_heightvertical %>%
+  emmeans(~ tier, regrid = "response", dpar = "hu", re_formula = NULL) %>% 
+  contrast(method = "revpairwise") |> 
+  describe_posterior()
+
+# Hu Sample Size
+data |> filter(height_vertical == 0) |> summarise(.by = tier, n = n())
+
+model_heightvertical |> 
+  broom.mixed::tidy() |> 
+  knitr::kable(digits = 2)
+```
+
+{{< pagebreak >}}
+
+## Emergent Vegetation
+
+```{r, echo=FALSE}
+arrange_plots(model_heightemergent, "Emergent Vegetation", xlim = c(-50, 50))
+
+model_heightemergent |> 
+    emmeans(~ tier, regrid = "response", epred = TRUE) |> 
+  # Contrast the groups pairwise (T1 - T3 predictions)
+  contrast("revpairwise") |> 
+  describe_posterior()
+
+# Hu
+model_heightemergent %>%
+  emmeans(~ tier, regrid = "response", dpar = "hu", re_formula = NULL) %>% 
+  contrast(method = "revpairwise") |> 
+  describe_posterior()
+
+# Hu Sample Size
+data |> filter(height_emergent == 0) |> summarise(.by = tier, n = n())
+
+model_heightemergent |> 
+  broom.mixed::tidy() |> 
+  knitr::kable(digits = 2)
+```
+
+## Contrast Parameters
+
+```{r}
+
+contrast_chains = function(model) {
+  model |> 
+  emmeans(~ tier, regrid = "response", epred = TRUE) |> 
+  # Contrast the groups pairwise (T1 - T3 predictions)
+  contrast("pairwise") |> 
+  gather_emmeans_draws()
+}
+
+# get all model objects and put in list
+m_pattern = grep("model_[a-z]+$", names(.GlobalEnv), value=TRUE)
+models = do.call("list", mget(m_pattern))
+
+# Individually...
+chains = bind_rows(map(models, contrast_chains), .id = "Variable")
+
+
+# plotting func
+ggplot(chains, aes(y = .value, x = Variable)) +
+    # stat_interval() +
+    stat_halfeye() +
+    geom_hline(yintercept = 0) +
+    facet_wrap(~ Variable, scales = "free")
+
+
+# plotting func
+plot_chains = function(chains) {
+  ggplot(chains, aes(y = .value)) +
+    stat_pointinterval() +
+    geom_hline(yintercept = 0)
+}
+
+# apply over list
+chains = map(models, contrast_chains)
+
+# plot
+map(chains, plot_chains) 
+
+
+```
+
+## Tabulate
+
+```{r}
+chains_table = chains |> 
+  map(\(x) mean_qi(x, .width = .95)) |> 
+  bind_rows(.id = "Variable") |> 
+  gt::gt(rowname_col = "Variable") |> 
+  gt::fmt_number(decimals = 2)
+
+chains_table
+
+chains_table %>% gt::gtsave(filename = here("results/tables/Table_2.docx"))
+
+chains %>% 
+  map(\(x) describe_posterior(x, centrality = "mean", ci_method = "eti", diagnostic = c("ESS")))
+
+```
+
+## Special Params for Models
+
+```{r}
+model_coverfloating |> 
+  emmeans(~ "tier")
+```
+
+```{r}
+data_A1 <- data[data$tier == levels(data$tier)[1], ]
+PPD_A1 <- posterior_linpred(fit, newdata = data_A1, transform = TRUE)
+data_A2 <- data_A1
+data_A2$factorA[1:nrow(data_A2)]  <- levels(data$tier)[2]
+PPD_A2 <- posterior_predict(fit, newdata = data_A2)
+PPD_diff <- PPD_A2 - PPD_A1
+hist(PPD_diff)
+
+bayestestR::hdi(PPD_diff)
+```
+
+```{r}
+library(easystats)
+psamp_T1 = as_draws(model_coverfloating, pars = "b_Intercept")
+psamp_T3 = as_draws(model_coverfloating, pars = "b_tierT3")
+
+overlap(psamp_T1, psamp_T3) |> plot()
+
+bayestestR::p_direction(model_coverfloating) |> plot()
+
+pairs(emmeans(model_coverfloating, ~ tier))
+pairs(emmeans(model_heightvertical, ~ tier))
+pairs(emmeans(model_heightemergent, ~ tier))
+pairs(emmeans(model_shaded, ~ tier, dpar = "zoi", regrid = "response"))
+pairs(emmeans(model_shaded, ~ tier, dpar = "coi", regrid = "response"))
+
+pairs(emmeans(model_coveremergent, ~ tier, dpar = "zoi", regrid = "response"))
+pairs(emmeans(model_coveremergent, ~ tier, dpar = "coi", regrid = "response"))
+pairs(emmeans(model_heightemergent, ~ tier, dpar = "hu", regrid = "response"))
+
+pairs(emmeans(model_coververtical, ~ tier, dpar = "zoi", regrid = "response"))
+pairs(emmeans(model_coververtical, ~ tier, dpar = "coi", regrid = "response"))
+pairs(emmeans(model_heightvertical, ~ tier, dpar = "hu", regrid = "response"))
+
+
+
+model_heightemergent |> 
+  emmeans(~ tier, epred = TRUE) |> 
+  contrast(method = "pairwise")
+
+model_heightvertical |> 
+  emmeans(~ tier, epred = TRUE) |> 
+  contrast(method = "pairwise") |> 
+  plot()
+
+model_heightemergent |> 
+  emmeans(~ tier) |> 
+  contrast(method = "pairwise") |> 
+  plot()
+```
+
+## Tidy Models
+
+```{r}
+library(broom)
+library(broom.mixed)
+library(flextable)
+library(officer)
+
+format_tidy_mod = function(model){
+  mutate(tidy(model), across(is.numeric, \(x) round(x, 2)))
+}
+
+doc_table <- read_docx() |>
+  body_add_par(value = "Covariate Models", style = "heading 1") %>%
+  body_add_par(value = "Width", style = "heading 2") %>%
+  body_add_table(format_tidy_mod(models[[1]])) %>%
+  body_add_break() %>%
+  body_add_par(value = "Emergent Height", style = "heading 2") %>%
+  body_add_table(format_tidy_mod(models[[2]])) %>%
+  body_add_break() %>%
+  body_add_par(value = "Shaded Area", style = "heading 2") %>%
+  body_add_table(format_tidy_mod(models[[3]])) %>%
+  body_add_break() %>%
+  body_add_par(value = "pH", style = "heading 2") %>%
+  body_add_table(format_tidy_mod(models[[4]])) %>%
+  body_add_break() %>%
+  body_add_par(value = "Salinity", style = "heading 2") %>%
+  body_add_table(format_tidy_mod(models[[5]])) %>%
+  body_add_break() %>%
+  body_add_par(value = "Floating Cover", style = "heading 2") %>%
+  body_add_table(format_tidy_mod(models[[6]])) %>%
+  body_add_break() %>%
+  body_add_par(value = "Bank Hieght", style = "heading 2") %>%
+  body_add_table(format_tidy_mod(models[[7]])) %>%
+  body_add_par(value = "Bank Cover", style = "heading 2") %>%
+  body_add_table(format_tidy_mod(models[[8]])) %>%
+  body_add_break() %>%
+  body_add_par(value = "Emergent Height", style = "heading 2") %>%
+  body_add_table(format_tidy_mod(models[[9]])) %>%
+  body_add_break() %>%
+  body_add_par(value = "Turbidity", style = "heading 2") %>%
+  body_add_table(format_tidy_mod(models[[10]])) |> 
+  body_add_par(value = "Water Temperature", style = "heading 2") %>%
+  body_add_table(format_tidy_mod(models[[11]]))
+
+print(doc_table, target = here::here("results/tables/Supplementary_Output.docx"))
+
+```
