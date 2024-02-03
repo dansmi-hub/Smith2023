@@ -4,3 +4,7 @@
 .Ruserdata
 renv/library/*
 renv/results/fit*
+
+_extensions/
+
+.quarto/
