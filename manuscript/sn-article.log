@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2024.1.30)  3 FEB 2024 20:58
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2024.1.30)  11 FEB 2024 20:24
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -997,13 +997,13 @@ Package rerunfilecheck Info: File `sn-article.out' has not changed.
 (rerunfilecheck)             Checksum: 573E71751BF11D5A362325F3CD049C90;5099.
  ) 
 Here is how much of TeX's memory you used:
- 14880 strings out of 478287
- 235612 string characters out of 5849289
- 548408 words of memory out of 5000000
- 32670 multiletter control sequences out of 15000+600000
+ 14879 strings out of 478287
+ 235609 string characters out of 5849289
+ 547327 words of memory out of 5000000
+ 32669 multiletter control sequences out of 15000+600000
  489679 words of font info for 111 fonts, out of 8000000 for 9000
  1151 hyphenation exceptions out of 8191
- 85i,18n,90p,2955b,615s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 85i,18n,90p,2955b,611s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texmf/fonts/enc/dvips/cm-super/cm-super-ts1.enc}</usr/share/texli
 ve/texmf-dist/fonts/type1/public/amsfonts/cmextra/cmbsy8.pfb></usr/share/texliv
 e/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/share/texlive/texm
@@ -1025,7 +1025,7 @@ c/amsfonts/cm/cmsy8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfo
 nts/cm/cmti10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm
 /cmti8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti9.
 pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm0800.pfb>
-Output written on sn-article.pdf (26 pages, 625223 bytes).
+Output written on sn-article.pdf (26 pages, 625380 bytes).
 PDF statistics:
  822 PDF objects out of 1000 (max. 8388607)
  734 compressed objects within 8 object streams

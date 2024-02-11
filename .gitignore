@@ -8,3 +8,9 @@ renv/results/fit*
 _extensions/
 
 .quarto/
+
+Cover Letter.docx
+
+*.pptx
+
+Cover Letter.odt
