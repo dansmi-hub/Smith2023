@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2024.1.30)  11 FEB 2024 20:24
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2024.1.30)  11 FEB 2024 21:13
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -791,7 +791,7 @@ Underfull \hbox (badness 2005) in paragraph at lines 207--207
 []\OT1/cmr/m/n/8 Concentration of dis-solved oxy-gen in the
  []
 
-<map.png, id=333, 241.6227pt x 319.9152pt>
+<map.png, id=329, 241.6227pt x 319.9152pt>
 File: map.png Graphic file (type png)
 <use map.png>
 Package pdftex.def Info: map.png  used on input line 222.
@@ -840,7 +840,7 @@ Underfull \vbox (badness 10000) has occurred while \output is active []
                                                   \__shipout_drop_firstpage_...
 l.298 
       ]
-<VP.pdf, id=432, 497.86pt x 355.3275pt>
+<VP.pdf, id=428, 497.86pt x 355.3275pt>
 File: VP.pdf Graphic file (type pdf)
 <use VP.pdf>
 Package pdftex.def Info: VP.pdf  used on input line 331.
@@ -854,7 +854,7 @@ Underfull \vbox (badness 10000) has occurred while \output is active []
                                                   \__shipout_drop_firstpage_...
 l.338 
       ]
-<beta_90.pdf, id=448, 240.9pt x 240.9pt>
+<beta_90.pdf, id=444, 240.9pt x 240.9pt>
 File: beta_90.pdf Graphic file (type pdf)
 <use beta_90.pdf>
 Package pdftex.def Info: beta_90.pdf  used on input line 343.
@@ -868,7 +868,7 @@ Underfull \vbox (badness 10000) has occurred while \output is active []
                                                   \__shipout_drop_firstpage_...
 l.350 
        <./VP.pdf>]
-<omega2_90.pdf, id=464, 240.9pt x 240.9pt>
+<omega2_90.pdf, id=460, 240.9pt x 240.9pt>
 File: omega2_90.pdf Graphic file (type pdf)
 <use omega2_90.pdf>
 Package pdftex.def Info: omega2_90.pdf  used on input line 353.
@@ -901,20 +901,16 @@ Package hyperref Warning: Difference (4) between bookmark levels is greater
 (hyperref)                than one, level fixed on input line 387.
 
 
-Package hyperref Warning: Difference (3) between bookmark levels is greater 
-(hyperref)                than one, level fixed on input line 391.
-
-
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
  [18]
-Underfull \hbox (badness 10000) in paragraph at lines 404--405
+Underfull \hbox (badness 10000) in paragraph at lines 403--404
 \OT1/cmr/m/n/10 Data are avail-able on GitHub/Dryad (https://github.com/dansmi-
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 408--409
+Underfull \hbox (badness 10000) in paragraph at lines 407--408
 \OT1/cmr/m/n/10 Reproducible code is avail-able on GitHub (https://github.com/d
 ansmi-
  []
@@ -994,16 +990,16 @@ LaTeX Font Warning: Size substitutions with differences
 (Font)              up to 0.985pt have occurred.
 
 Package rerunfilecheck Info: File `sn-article.out' has not changed.
-(rerunfilecheck)             Checksum: 573E71751BF11D5A362325F3CD049C90;5099.
+(rerunfilecheck)             Checksum: F86D4223B6187C90831CEF790246DCCC;4965.
  ) 
 Here is how much of TeX's memory you used:
- 14879 strings out of 478287
- 235609 string characters out of 5849289
- 547327 words of memory out of 5000000
- 32669 multiletter control sequences out of 15000+600000
+ 14877 strings out of 478287
+ 235587 string characters out of 5849289
+ 547324 words of memory out of 5000000
+ 32668 multiletter control sequences out of 15000+600000
  489679 words of font info for 111 fonts, out of 8000000 for 9000
  1151 hyphenation exceptions out of 8191
- 85i,18n,90p,2955b,611s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 85i,18n,90p,2955b,615s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texmf/fonts/enc/dvips/cm-super/cm-super-ts1.enc}</usr/share/texli
 ve/texmf-dist/fonts/type1/public/amsfonts/cmextra/cmbsy8.pfb></usr/share/texliv
 e/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/share/texlive/texm
@@ -1025,10 +1021,10 @@ c/amsfonts/cm/cmsy8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfo
 nts/cm/cmti10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm
 /cmti8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti9.
 pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm0800.pfb>
-Output written on sn-article.pdf (26 pages, 625380 bytes).
+Output written on sn-article.pdf (26 pages, 624098 bytes).
 PDF statistics:
- 822 PDF objects out of 1000 (max. 8388607)
- 734 compressed objects within 8 object streams
- 142 named destinations out of 1000 (max. 500000)
- 221 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 818 PDF objects out of 1000 (max. 8388607)
+ 730 compressed objects within 8 object streams
+ 141 named destinations out of 1000 (max. 500000)
+ 213 words of extra memory for PDF output out of 10000 (max. 10000000)
 
