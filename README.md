@@ -1,5 +1,7 @@
 # Vegetation structure drives mosquito community composition in UK’s largest managed lowland wetland
 
+Published article that accompanies this code is here: https://doi.org/10.1186/s13071-024-06280-y
+
 ## Folders
 
 - **results**: Contains model results, plots, and tables generated during the analysis.
